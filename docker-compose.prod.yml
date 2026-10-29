@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: etiquetas
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: etiquetas
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://etiquetas:${POSTGRES_PASSWORD}@postgres:5432/etiquetas
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3333
+      BASE_DOMAIN: ${BASE_DOMAIN}
+      PUBLIC_URL: https://${BASE_DOMAIN}
+      UPLOADS_DIR: /app/uploads
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      - postgres
+
+  edge:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.edge
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/certs:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  uploads_data:

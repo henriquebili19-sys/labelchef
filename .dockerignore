@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+**/.vite
+**/uploads
+**/.env
+**/.env.*
+!.env.production.example
+.git
+.claude
+print-agent
+deploy
+docs
+*.log
