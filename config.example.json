@@ -1,0 +1,4 @@
+{
+  "backendUrl": "ws://localhost:3333/ws/agente",
+  "token": "COLE_AQUI_O_TOKEN_DA_EMPRESA"
+}
